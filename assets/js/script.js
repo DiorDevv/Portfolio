@@ -123,16 +123,52 @@ const formBtn = document.querySelector("[data-form-btn]");
 // add event to all form input field
 for (let i = 0; i < formInputs.length; i++) {
   formInputs[i].addEventListener("input", function () {
-
     // check form validation
     if (form.checkValidity()) {
       formBtn.removeAttribute("disabled");
     } else {
       formBtn.setAttribute("disabled", "");
     }
-
   });
 }
+
+// === TELEGRAM BOTGA YUBORISH KODI ===
+const TELEGRAM_BOT_TOKEN = '7882829368:AAEH3pJtkw27EN1jjaNoySSxdUR_7i3kg8U'; // Sizning bot tokeningiz
+const TELEGRAM_CHAT_ID = '6654518825'; // O'zingizning chat_id (raqam ko'rinishida)
+
+// === TOAST FUNKSIYASI ===
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('custom-toast');
+  toast.textContent = message;
+  toast.className = 'custom-toast ' + type + ' show';
+  setTimeout(() => {
+    toast.className = 'custom-toast ' + type;
+  }, 3000);
+}
+
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const fullname = form.querySelector('input[name="fullname"]').value;
+  const email = form.querySelector('input[name="email"]').value;
+  const message = form.querySelector('textarea[name="message"]').value;
+
+  const text = `Yangi kontakt so'rovi:%0AIsm: ${fullname}%0AEmail: ${email}%0AXabar: ${message}`;
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${text}`;
+
+  fetch(url)
+    .then(response => {
+      if (response.ok) {
+        showToast("Xabaringiz muvaffaqiyatli yuborildi!", 'success');
+        form.reset();
+        formBtn.setAttribute("disabled", "");
+      } else {
+        showToast("Xabar yuborishda xatolik yuz berdi. Iltimos, keyinroq urinib ko'ring.", 'error');
+      }
+    })
+    .catch(error => {
+      showToast("Xabar yuborishda xatolik yuz berdi. Iltimos, internet aloqangizni tekshiring.", 'error');
+    });
+});
 
 
 
